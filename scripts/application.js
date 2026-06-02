@@ -1,19 +1,12 @@
 import { cifrarTexto } from './apresentacao.js'
 
 export function iniciarCamadaAplicacao() {
-  const convidados = [
-    { nome: 'Ana', email: 'ana@exemplo.com', empresa: 'Empresa A' },
-    { nome: 'Bruno', email: 'bruno@exemplo.com', empresa: 'Empresa B' },
-    { nome: 'Carla', email: 'carla@exemplo.com', empresa: 'Empresa C' }
-  ]
-
   const estado = {
     protocolo: '',
     requisicao: '',
     email: null,
     dadosAplicacao: null,
-    apresentacao: null,
-    convidados
+    apresentacao: null
   }
 
   const usuarioEl = document.querySelector('.user')
@@ -28,7 +21,6 @@ export function iniciarCamadaAplicacao() {
   const assuntoSmtpEl = document.querySelector('#smtp-subject')
   const mensagemSmtpEl = document.querySelector('#smtp-message')
   const dadosAplicacaoEl = document.querySelector('#dados-aplicacao')
-  const listaConvidadosEl = document.querySelector('#lista-convidados')
   const dadosApresentacaoEl = document.querySelector('#dados-apresentacao')
 
   function ocultarFormulario() {
@@ -62,17 +54,6 @@ export function iniciarCamadaAplicacao() {
     return dados
   }
 
-  function renderConvidados() {
-    if (!listaConvidadosEl) return
-    listaConvidadosEl.innerHTML = ''
-
-    estado.convidados.forEach(convidado => {
-      const item = document.createElement('li')
-      item.textContent = `${convidado.nome} • ${convidado.email} • ${convidado.empresa}`
-      listaConvidadosEl.appendChild(item)
-    })
-  }
-
   function renderDadosAplicacao() {
     if (!dadosAplicacaoEl) return
     if (!estado.dadosAplicacao) {
@@ -93,14 +74,8 @@ export function iniciarCamadaAplicacao() {
       'Email criptografado:',
       `Destinatário: ${estado.apresentacao.email.destinatario}`,
       `Assunto: ${estado.apresentacao.email.assunto}`,
-      `Mensagem cifrada: ${estado.apresentacao.email.mensagemCifrada}`,
-      '',
-      'Convidados com criptografia aplicada:'
+      `Mensagem cifrada: ${estado.apresentacao.email.mensagemCifrada}`
     ]
-
-    estado.apresentacao.convidados.forEach((convidado, index) => {
-      linhas.push(`${index + 1}. ${convidado.nome} • ${convidado.empresa}`)
-    })
 
     dadosApresentacaoEl.textContent = linhas.join('\n')
   }
@@ -143,6 +118,11 @@ export function iniciarCamadaAplicacao() {
         return
       }
 
+      if (!destinatario.includes('@')) {
+        alert('Digite um destinatário válido com @.')
+        return
+      }
+
       const mensagemCifrada = cifrarTexto(mensagem)
       estado.email = { destinatario, assunto, mensagem }
       estado.dadosAplicacao = {
@@ -153,11 +133,7 @@ export function iniciarCamadaAplicacao() {
         status: 'Email enviado para apresentação.'
       }
       estado.apresentacao = {
-        email: { destinatario, assunto, mensagemCifrada },
-        convidados: estado.convidados.map(convidado => ({
-          nome: cifrarTexto(convidado.nome),
-          empresa: cifrarTexto(convidado.empresa)
-        }))
+        email: { destinatario, assunto, mensagemCifrada }
       }
 
       renderDadosAplicacao()
@@ -170,7 +146,6 @@ export function iniciarCamadaAplicacao() {
     })
   }
 
-  renderConvidados()
   renderDadosAplicacao()
   renderDadosApresentacao()
   ocultarFormulario()
