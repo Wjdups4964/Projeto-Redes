@@ -23,33 +23,71 @@
     <p class="user"></p>
   </header>
   <main class="main">
-    <div class="request-wrapper">
-      <input class="text-input" type="text" placeholder="Escreva o tipo de um protocolo de redes">
-      <button class="request-btn">Realizar Requisição</button>
-      <input type="file" name="file" id="arquivo">
-    </div>
-    <div class="smtp-form" style="display: none;">
-      <h2>Formulário SMTP/POP</h2>
-      <label>
-        Destinatário
-        <input type="email" id="smtp-email" placeholder="email@dominio.com">
-      </label>
-      <label>
-        Assunto
-        <input type="text" id="smtp-subject" placeholder="Assunto da mensagem">
-      </label>
-      <label>
-        Mensagem
-        <textarea id="smtp-message" rows="4" placeholder="Escreva sua mensagem aqui"></textarea>
-      </label>
-      <button type="button" class="smtp-send-btn">Enviar email</button>
-    </div>
-    <div class="protocol-name-wrapper">
-      <h1 class="protocol-name"></h1>
-    </div>
+    <section class="osi-layout">
+      <aside class="osi-menu">
+        <button class="osi-layer-btn ativo" data-camada="aplicacao">Aplicação</button>
+        <button class="osi-layer-btn" data-camada="apresentacao">Apresentação</button>
+      </aside>
+
+      <div class="osi-panel">
+        <div class="osi-descricao">
+          <h2 id="descricao-titulo">Camada de Aplicação</h2>
+          <p id="descricao-camada">Nesta camada, exploramos protocolos como HTTP, SMTP e POP. Use o painel para identificar protocolos e simular envio de email.</p>
+        </div>
+
+        <div class="osi-content">
+          <section id="camada-aplicacao" class="camada ativa">
+            <div class="request-wrapper">
+              <input id="requisicao-texto" class="text-input" type="text" placeholder="Digite protocolo ou email para SMTP">
+              <button class="request-btn">Realizar Requisição</button>
+            </div>
+
+            <div class="protocolo-info">
+              <p>Protocolo detectado: <strong class="protocol-name"></strong></p>
+            </div>
+
+            <div class="smtp-form">
+              <h2>Formulário SMTP/POP</h2>
+              <label>
+                Destinatário
+                <input type="email" id="smtp-email" placeholder="email@dominio.com">
+              </label>
+              <label>
+                Assunto
+                <input type="text" id="smtp-subject" placeholder="Assunto da mensagem">
+              </label>
+              <label>
+                Mensagem
+                <textarea id="smtp-message" rows="4" placeholder="Escreva sua mensagem aqui"></textarea>
+              </label>
+              <button type="button" class="smtp-send-btn">Enviar email</button>
+            </div>
+
+            <div class="aplicacao-dados">
+              <h4>Dados da Camada de Aplicação</h4>
+              <pre id="dados-aplicacao">Nenhum dado processado ainda.</pre>
+            </div>
+
+            <div class="convidados-card">
+              <h4>Convidados</h4>
+              <ul id="lista-convidados"></ul>
+            </div>
+          </section>
+
+          <section id="camada-apresentacao" class="camada">
+            <h3>Camada de Apresentação</h3>
+            <p>Os dados processados pela camada de aplicação são exibidos aqui já com criptografia aplicada.</p>
+            <div class="apresentacao-dados">
+              <h4>Dados Criptografados</h4>
+              <pre id="dados-apresentacao">Aguardando envio de email...</pre>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
   </main>
   
-  <script type="module" src="./scripts/osi.js"></script>
+  <script type="module" src="./scripts/modelo-osi.js"></script>
 </body>
 
 </html>
