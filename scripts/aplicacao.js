@@ -8,3 +8,5 @@ export const camadas = {
     descricao: 'Exibe os dados processados pela camada de aplicação com criptografia aplicada.'
   }
 }
+
+
