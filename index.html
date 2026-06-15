@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./style/global.css">
   <link rel="stylesheet" href="./style/header.css">
   <link rel="stylesheet" href="./style/main.css">
+  <link rel="stylesheet" href="./style/responsive.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -27,6 +28,10 @@
       <aside class="osi-menu">
         <button class="osi-layer-btn ativo" data-camada="aplicacao">Aplicação</button>
         <button class="osi-layer-btn" data-camada="apresentacao">Apresentação</button>
+        <button class="osi-layer-btn" data-camada="sessao">Sessão</button>
+        <button class="osi-layer-btn" data-camada="transporte">Transporte</button>
+        <button class="osi-layer-btn" data-camada="rede">Rede</button>
+        <button class="osi-layer-btn" data-camada="enlace">Enlace</button>
       </aside>
 
       <div class="osi-panel">
@@ -76,6 +81,30 @@
               <h4>Dados Criptografados</h4>
               <pre id="dados-apresentacao">Aguardando envio de email...</pre>
             </div>
+          </section>
+
+          <section id="camada-sessao" class="camada">
+            <h3>Camada de Sessão</h3>
+            <p>Gerenciamento de sessão e estado entre os sistemas.</p>
+            <pre id="dados-sessao">Aguardando estabelecimento de sessão...</pre>
+          </section>
+
+          <section id="camada-transporte" class="camada">
+            <h3>Camada de Transporte</h3>
+            <p>Segmentos com portas e controle de transporte são exibidos aqui.</p>
+            <pre id="dados-transporte">Aguardando segmento de transporte...</pre>
+          </section>
+
+          <section id="camada-rede" class="camada">
+            <h3>Camada de Rede</h3>
+            <p>Pacotes IP e endereçamento lógico são exibidos nesta camada.</p>
+            <pre id="dados-rede">Aguardando pacote de rede...</pre>
+          </section>
+
+          <section id="camada-enlace" class="camada">
+            <h3>Camada de Enlace de Dados</h3>
+            <p>Quadros com endereçamento físico (MAC) e encapsulamento final.</p>
+            <pre id="dados-enlace">Aguardando quadro de enlace...</pre>
           </section>
         </div>
       </div>

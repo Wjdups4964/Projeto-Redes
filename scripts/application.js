@@ -1,4 +1,8 @@
 import { cifrarTexto } from './apresentacao.js'
+import { iniciarSessao } from './sessao.js'
+import { camadaTransporte } from './transporte.js'
+import { camadaRede } from './rede.js'
+import { camadaEnlace } from './enlace-dados.js'
 
 export function iniciarCamadaAplicacao() {
   const estado = {
@@ -6,7 +10,12 @@ export function iniciarCamadaAplicacao() {
     requisicao: '',
     email: null,
     dadosAplicacao: null,
-    apresentacao: null
+    apresentacao: null,
+    sessao: null,
+    transporte: null,
+    rede: null,
+    enlace: null,
+    encapsulamento: null
   }
 
   const usuarioEl = document.querySelector('.user')
@@ -22,6 +31,10 @@ export function iniciarCamadaAplicacao() {
   const mensagemSmtpEl = document.querySelector('#smtp-message')
   const dadosAplicacaoEl = document.querySelector('#dados-aplicacao')
   const dadosApresentacaoEl = document.querySelector('#dados-apresentacao')
+  const dadosSessaoEl = document.querySelector('#dados-sessao')
+  const dadosTransporteEl = document.querySelector('#dados-transporte')
+  const dadosRedeEl = document.querySelector('#dados-rede')
+  const dadosEnlaceEl = document.querySelector('#dados-enlace')
 
   function ocultarFormulario() {
     if (formularioSmtp) formularioSmtp.style.display = 'none'
@@ -111,6 +124,52 @@ export function iniciarCamadaAplicacao() {
     dadosApresentacaoEl.textContent = 'Nenhum formato conhecido para apresentação.'
   }
 
+  function renderDadosSessao() {
+    if (!dadosSessaoEl) return
+    dadosSessaoEl.textContent = estado.sessao ? JSON.stringify(estado.sessao, null, 2) : 'Aguardando estabelecimento de sessão...'
+  }
+
+  function renderDadosTransporte() {
+    if (!dadosTransporteEl) return
+    dadosTransporteEl.textContent = estado.transporte ? JSON.stringify(estado.transporte, null, 2) : 'Aguardando segmento de transporte...'
+  }
+
+  function renderDadosRede() {
+    if (!dadosRedeEl) return
+    dadosRedeEl.textContent = estado.rede ? JSON.stringify(estado.rede, null, 2) : 'Aguardando pacote de rede...'
+  }
+
+  function renderDadosEnlace() {
+    if (!dadosEnlaceEl) return
+    dadosEnlaceEl.textContent = estado.enlace ? JSON.stringify(estado.enlace, null, 2) : 'Aguardando quadro de enlace...'
+  }
+
+  function renderTodasCamadas() {
+    renderDadosAplicacao()
+    renderDadosApresentacao()
+    renderDadosSessao()
+    renderDadosTransporte()
+    renderDadosRede()
+    renderDadosEnlace()
+  }
+
+  function encapsularCamadas() {
+    try {
+      if (!estado.apresentacao) return
+      const sessaoObj = iniciarSessao(estado.apresentacao)
+      const segmento = camadaTransporte(sessaoObj, estado.protocolo)
+      const pacote = camadaRede(segmento, estado.dadosAplicacao)
+      const quadro = camadaEnlace(pacote)
+      estado.sessao = sessaoObj
+      estado.transporte = segmento
+      estado.rede = pacote
+      estado.enlace = quadro
+      estado.encapsulamento = quadro
+    } catch (err) {
+      console.error('Erro ao encapsular camadas:', err)
+    }
+  }
+
   if (botaoRequisicao) {
     botaoRequisicao.addEventListener('click', event => {
       event.preventDefault()
@@ -171,7 +230,8 @@ export function iniciarCamadaAplicacao() {
         }
 
         renderDadosAplicacao()
-        renderDadosApresentacao()
+        encapsularCamadas()
+        renderTodasCamadas()
         if (textoRequisicaoEl) textoRequisicaoEl.value = ''
       } catch (err) {
         console.error('Erro ao processar requisição:', err)
@@ -213,7 +273,8 @@ export function iniciarCamadaAplicacao() {
       }
 
       renderDadosAplicacao()
-      renderDadosApresentacao()
+      encapsularCamadas()
+      renderTodasCamadas()
       ocultarFormulario()
 
       if (emailSmtpEl) emailSmtpEl.value = ''
@@ -222,8 +283,7 @@ export function iniciarCamadaAplicacao() {
     })
   }
 
-  renderDadosAplicacao()
-  renderDadosApresentacao()
+  renderTodasCamadas()
   ocultarFormulario()
 
   return estado

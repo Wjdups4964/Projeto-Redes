@@ -1,7 +1,28 @@
+:root {
+  --bg-start: #100b24;
+  --bg-end: #0d081f;
+  --panel: rgba(255, 255, 255, 0.08);
+  --panel-border: rgba(255, 255, 255, 0.14);
+  --panel-strong: rgba(7, 158, 166, 0.18);
+  --accent: #079ea6;
+  --accent-soft: #4dd0d7;
+  --text: #f5f5f8;
+  --muted: #cbd7f0;
+  --radius: 1.2rem;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, rgba(7, 158, 166, 0.14), transparent 25%),
+    linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  color: var(--text);
+}
+
 .main {
   padding: 2rem;
   min-height: calc(100vh - 10rem);
-  background: linear-gradient(180deg, #15062f 0%, #1c0d50 100%);
 }
 
 .request-wrapper {
@@ -14,8 +35,8 @@
 
 .protocol-name {
   display: inline-block;
-  color: #79f4ff;
-  font-size: 1.15rem;
+  color: var(--accent-soft);
+  font-size: 1.125rem;
   font-weight: 700;
 }
 
@@ -23,99 +44,105 @@
   flex: 1 1 18rem;
   min-width: 18rem;
   height: 3.25rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 0 1.2rem;
+  color: var(--text);
   font-size: 1rem;
-  border-radius: 0.75rem;
-  background-color: #f5eae9;
-  padding: 0 1rem;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(7, 158, 166, 0.15);
 }
 
 .request-btn {
   min-width: 12rem;
   height: 3.25rem;
-  padding: 0 1rem;
+  padding: 0 1.2rem;
   font-family: "Poppins", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
-  background-color: #079ea6;
+  background-image: linear-gradient(135deg, var(--accent), #3ba9d0);
   color: #fff;
   border: none;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .request-btn:hover,
 .osi-layer-btn:hover {
-  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .protocolo-info {
   margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
+  padding: 1.15rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
 }
 
 .aplicacao-dados,
-.apresentacao-dados {
+.apresentacao-dados,
+.camada pre,
+.smtp-form {
   margin-top: 1.5rem;
-  padding: 1.25rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
 }
 
 .aplicacao-dados h4,
 .apresentacao-dados h4 {
-  margin-top: 0;
-  color: #9df0ff;
+  margin: 0 0 0.85rem;
+  color: var(--accent-soft);
 }
 
 .aplicacao-dados pre,
-.apresentacao-dados pre {
+.apresentacao-dados pre,
+.camada pre {
   white-space: pre-wrap;
   word-break: break-word;
   margin: 0;
-  color: #f5f5f5;
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.55;
 }
-
 
 .smtp-form {
   display: none;
-  margin-top: 1.5rem;
-  padding: 1.75rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
-  color: #fff;
 }
 
 .smtp-form h2 {
   margin: 0 0 1rem;
-  font-size: 1.4rem;
-  color: #9df0ff;
+  font-size: 1.45rem;
+  color: var(--accent-soft);
 }
 
 .smtp-form label {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 1.15rem;
   font-size: 0.95rem;
-  color: #dfe7ff;
+  color: var(--muted);
 }
 
 .smtp-form input,
 .smtp-form textarea {
-  width: 99%;
-  padding: 0.85rem 1rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
   margin-top: 0.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.95rem;
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--text);
   font-size: 1rem;
   font-family: "Poppins", sans-serif;
 }
@@ -127,20 +154,20 @@
 
 .smtp-form textarea {
   resize: vertical;
-  min-height: 10rem;
+  min-height: 11rem;
 }
 
 .smtp-form input:focus,
 .smtp-form textarea:focus {
   outline: none;
-  border-color: #6ce7ff;
-  box-shadow: 0 0 0 3px rgba(7, 158, 166, 0.16);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(7, 158, 166, 0.14);
 }
 
 .osi-layout {
   display: flex;
   gap: 2rem;
-  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .osi-menu {
@@ -154,39 +181,45 @@
   padding: 1rem 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .osi-layer-btn.ativo {
-  background-color: #079ea6;
-  border-color: #079ea6;
+  background-color: rgba(7, 158, 166, 0.95);
+  border-color: var(--accent);
 }
 
 .osi-panel {
   flex: 1;
   min-width: 24rem;
-  background-color: #2b4984;
-  border-radius: 1rem;
-  padding: 15px;
+  background: rgba(14, 30, 68, 0.98);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
 }
 
 .osi-panel h3 {
   margin-top: 0;
-  color: #9df0ff;
-  font-size: 1.5rem;
+  color: var(--accent-soft);
+  font-size: 1.6rem;
 }
 
 .osi-descricao {
   padding: 1.6rem;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   margin-bottom: 1.5rem;
-  color: #fff;
+  color: var(--text);
+}
+
+.osi-descricao p {
+  margin: 0.75rem 0 0;
+  line-height: 1.7;
 }
 
 .osi-content {
@@ -202,48 +235,16 @@
   display: block;
 }
 
-.presentation-result {
+.camada h3 {
+  margin-top: 0;
+}
+
+.camada pre {
   margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  white-space: pre-wrap;
-}
-
-@media (max-width: 900px) {
-  .request-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .text-input {
-    width: 100%;
-  }
-
-  .osi-layout {
-    flex-direction: column;
-  }
-
-  .osi-menu {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .osi-layer-btn {
-    flex: 1 1 45%;
-  }
-}
-
-@media (max-width: 600px) {
-  .osi-layer-btn {
-    flex: 1 1 100%;
-  }
-
-  .request-btn {
-    width: 100%;
-  }
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 
