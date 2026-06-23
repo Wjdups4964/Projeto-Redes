@@ -265,5 +265,44 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Botão "Prosseguir" entre camadas */
+.btn-prosseguir {
+  display: block;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.5rem;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), #3ba9d0);
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(7, 158, 166, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  animation: prosseguir-entrada 0.35s ease-out both;
+}
 
+.btn-prosseguir:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(7, 158, 166, 0.45);
+  filter: brightness(1.08);
+}
 
+.btn-prosseguir:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(7, 158, 166, 0.25);
+}
+
+@keyframes prosseguir-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -163,11 +163,33 @@ export function iniciarCamadaAplicacao() {
     })
   }
 
-  function delay(ms = 450) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+  function removerBotoesProsseguir() {
+    document.querySelectorAll('.btn-prosseguir').forEach(btn => btn.remove())
   }
 
-  async function executarFluxoAutomatico() {
+  function aguardarProsseguir(camadaId) {
+    return new Promise(resolve => {
+      const secao = document.querySelector(`#camada-${camadaId}`)
+      if (!secao) { resolve(); return }
+
+      removerBotoesProsseguir()
+
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'btn-prosseguir'
+      btn.textContent = 'Prosseguir ▶'
+      secao.appendChild(btn)
+
+      btn.addEventListener('click', () => {
+        btn.remove()
+        resolve()
+      }, { once: true })
+
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+  }
+
+  async function executarFluxoControlado() {
     try {
       if (!estado.apresentacao) {
         estado.apresentacao = {
@@ -178,40 +200,45 @@ export function iniciarCamadaAplicacao() {
         }
       }
 
+      // — Camada de Aplicação —
       atualizarProgresso(0, 'Iniciando requisição...')
-      await delay(250)
       ativarCamada('aplicacao')
-      atualizarProgresso(16, 'Camada de Aplicação concluída')
-      await delay(450)
+      atualizarProgresso(16, 'Camada de Aplicação concluída — aguardando usuário')
+      await aguardarProsseguir('aplicacao')
 
+      // — Camada de Apresentação —
+      renderDadosApresentacao()
       ativarCamada('apresentacao')
-      atualizarProgresso(32, 'Camada de Apresentação concluída')
-      await delay(450)
+      atualizarProgresso(32, 'Camada de Apresentação concluída — aguardando usuário')
+      await aguardarProsseguir('apresentacao')
 
+      // — Camada de Sessão —
       estado.sessao = iniciarSessao(estado.apresentacao)
       renderDadosSessao()
       ativarCamada('sessao')
-      atualizarProgresso(48, 'Sessão estabelecida')
-      await delay(450)
+      atualizarProgresso(48, 'Sessão estabelecida — aguardando usuário')
+      await aguardarProsseguir('sessao')
 
+      // — Camada de Transporte —
       estado.transporte = camadaTransporte(estado.sessao, estado.protocolo)
       renderDadosTransporte()
       ativarCamada('transporte')
-      atualizarProgresso(64, 'Segmento transportado')
-      await delay(450)
+      atualizarProgresso(64, 'Segmento transportado — aguardando usuário')
+      await aguardarProsseguir('transporte')
 
+      // — Camada de Rede —
       estado.rede = camadaRede(estado.transporte, estado.dadosAplicacao)
       renderDadosRede()
       ativarCamada('rede')
-      atualizarProgresso(80, 'Pacote IP montado')
-      await delay(450)
+      atualizarProgresso(80, 'Pacote IP montado — aguardando usuário')
+      await aguardarProsseguir('rede')
 
+      // — Camada de Enlace —
       estado.enlace = camadaEnlace(estado.rede)
       estado.encapsulamento = estado.enlace
       renderDadosEnlace()
       ativarCamada('enlace')
-      atualizarProgresso(100, 'Quadro de enlace finalizado')
-      await delay(350)
+      atualizarProgresso(100, 'Quadro de enlace finalizado ✓')
 
       const srcIP = estado.rede.rede.srcIP
       const dstIP = estado.rede.rede.dstIP
@@ -287,7 +314,7 @@ export function iniciarCamadaAplicacao() {
         renderDadosAplicacao()
         renderTodasCamadas()
         if (textoRequisicaoEl) textoRequisicaoEl.value = ''
-        await executarFluxoAutomatico()
+        await executarFluxoControlado()
       } catch (err) {
         console.error('Erro ao processar requisição:', err)
         alert(`Erro: ${err.message}`)
