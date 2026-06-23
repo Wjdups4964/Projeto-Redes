@@ -1,19 +1,27 @@
 export function camadaTransporte(sessaoObj, protocoloAplicacao) {
   const proto = (protocoloAplicacao || '').toUpperCase()
-  let dstPort = 8080
-  if (proto.includes('HTTP') && proto.includes('HTTPS')) dstPort = 443
-  else if (proto.includes('HTTPS')) dstPort = 443
-  else if (proto.includes('HTTP')) dstPort = 80
-  else if (proto.includes('SMTP')) dstPort = 25
-  else if (proto.includes('DNS')) dstPort = 53
+  
+  const PROTOCOLO_PORTA_MAP = {
+    'HTTP': { port: 80, trans: 'TCP' },
+    'HTTPS': { port: 443, trans: 'TCP' },
+    'HTTP/HTTPS': { port: 443, trans: 'TCP' },
+    'SMTP': { port: 25, trans: 'TCP' },
+    'POP': { port: 110, trans: 'TCP' },
+    'SMTP/POP': { port: 587, trans: 'TCP' },
+    'DNS': { port: 53, trans: 'UDP' },
+    'WEBSOCKET': { port: 443, trans: 'TCP' },
+    'FTP': { port: 21, trans: 'TCP' }
+  }
+
+  const config = PROTOCOLO_PORTA_MAP[proto] || { port: 8080, trans: 'TCP' }
 
   const segmento = {
     transporte: {
-      protocolo: 'TCP',
+      protocolo: config.trans,
       srcPort: Math.floor(10000 + Math.random() * 40000),
-      dstPort,
-      seq: Math.floor(Math.random() * 1000000),
-      ack: 0,
+      dstPort: config.port,
+      seq: config.trans === 'TCP' ? Math.floor(Math.random() * 1000000) : null,
+      ack: config.trans === 'TCP' ? 0 : null,
       payload: sessaoObj
     }
   }

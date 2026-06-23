@@ -2,22 +2,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
   background-color: #313131;
-  padding: 2rem;
+  padding: clamp(1rem, 2.5vw, 2rem);
 }
 
 .osi-img {
-  width: 9rem;
-  height: 9rem;
-  border-radius: 4rem;
+  width: clamp(5rem, 12vw, 9rem);
+  height: clamp(5rem, 12vw, 9rem);
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .title {
   color: #FFF;
-  font-size: 3rem;
+  font-size: clamp(1.8rem, 3.8vw, 3rem);
+  line-height: 1.2;
 }
 
 .user {
   color: #FFF;
   font-size: 1rem;
+  margin-left: auto;
 }

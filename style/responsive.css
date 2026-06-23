@@ -10,18 +10,22 @@
   }
 
   .osi-menu {
+    width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    min-width: auto;
   }
 
   .osi-layer-btn {
-    flex: 1 1 calc(50% - 0.75rem);
+    flex: 1 1 calc(50% - 0.5rem);
   }
 }
 
 @media (max-width: 820px) {
+  .main {
+    padding: 1rem;
+  }
+
   .request-wrapper {
     flex-direction: column;
     align-items: stretch;
@@ -30,6 +34,7 @@
   .text-input,
   .request-btn {
     width: 100%;
+    min-width: 0;
   }
 
   .osi-panel {
@@ -37,11 +42,15 @@
   }
 
   .osi-layer-btn {
-    flex: 1 1 calc(50% - 0.75rem);
+    flex: 1 1 calc(50% - 0.5rem);
   }
 }
 
 @media (max-width: 620px) {
+  .osi-menu {
+    width: 100%;
+  }
+
   .osi-layer-btn {
     flex: 1 1 100%;
   }
@@ -53,10 +62,7 @@
 
 @media (max-width: 520px) {
   .head {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
   }
 
   .title {

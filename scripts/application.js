@@ -4,6 +4,8 @@ import { camadaTransporte } from './transporte.js'
 import { camadaRede } from './rede.js'
 import { camadaEnlace } from './enlace-dados.js'
 
+const CAMADAS_ORDEM = ['aplicacao', 'apresentacao', 'sessao', 'transporte', 'rede', 'enlace']
+
 export function iniciarCamadaAplicacao() {
   const estado = {
     protocolo: '',
@@ -35,6 +37,8 @@ export function iniciarCamadaAplicacao() {
   const dadosTransporteEl = document.querySelector('#dados-transporte')
   const dadosRedeEl = document.querySelector('#dados-rede')
   const dadosEnlaceEl = document.querySelector('#dados-enlace')
+  const progressoFillEl = document.querySelector('#fluxo-progresso-fill')
+  const progressoTextoEl = document.querySelector('#fluxo-status-text')
 
   function ocultarFormulario() {
     if (formularioSmtp) formularioSmtp.style.display = 'none'
@@ -83,7 +87,6 @@ export function iniciarCamadaAplicacao() {
       return
     }
 
-    // Se for email (SMTP/POP)
     if (estado.apresentacao.email) {
       const linhas = [
         '═══ EMAIL CRIPTOGRAFADO ═══',
@@ -95,7 +98,6 @@ export function iniciarCamadaAplicacao() {
       return
     }
 
-    // Se for HTTP/HTTPS via JWT
     if (estado.apresentacao.jwt) {
       const linhas = []
       linhas.push('═══ SESSÃO JWT HTTP/HTTPS ═══')
@@ -110,7 +112,6 @@ export function iniciarCamadaAplicacao() {
       return
     }
 
-    // Se for DNS
     if (estado.apresentacao.dns) {
       const linhas = [
         '═══ RESOLUÇÃO DNS ═══',
@@ -144,6 +145,85 @@ export function iniciarCamadaAplicacao() {
     dadosEnlaceEl.textContent = estado.enlace ? JSON.stringify(estado.enlace, null, 2) : 'Aguardando quadro de enlace...'
   }
 
+  function atualizarProgresso(percentual, texto) {
+    if (progressoFillEl) progressoFillEl.style.width = `${percentual}%`
+    if (progressoTextoEl) progressoTextoEl.textContent = texto
+  }
+
+  function ativarCamada(camada) {
+    const secao = document.querySelector(`#camada-${camada}`)
+    if (!secao) return
+
+    if (!secao.classList.contains('ativa')) {
+      secao.classList.add('ativa')
+    }
+
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+  }
+
+  function delay(ms = 450) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  async function executarFluxoAutomatico() {
+    try {
+      if (!estado.apresentacao) {
+        estado.apresentacao = {
+          resumo: {
+            protocolo: estado.protocolo || 'N/D',
+            requisicao: estado.requisicao || ''
+          }
+        }
+      }
+
+      atualizarProgresso(0, 'Iniciando requisição...')
+      await delay(250)
+      ativarCamada('aplicacao')
+      atualizarProgresso(16, 'Camada de Aplicação concluída')
+      await delay(450)
+
+      ativarCamada('apresentacao')
+      atualizarProgresso(32, 'Camada de Apresentação concluída')
+      await delay(450)
+
+      estado.sessao = iniciarSessao(estado.apresentacao)
+      renderDadosSessao()
+      ativarCamada('sessao')
+      atualizarProgresso(48, 'Sessão estabelecida')
+      await delay(450)
+
+      estado.transporte = camadaTransporte(estado.sessao, estado.protocolo)
+      renderDadosTransporte()
+      ativarCamada('transporte')
+      atualizarProgresso(64, 'Segmento transportado')
+      await delay(450)
+
+      estado.rede = camadaRede(estado.transporte, estado.dadosAplicacao)
+      renderDadosRede()
+      ativarCamada('rede')
+      atualizarProgresso(80, 'Pacote IP montado')
+      await delay(450)
+
+      estado.enlace = camadaEnlace(estado.rede)
+      estado.encapsulamento = estado.enlace
+      renderDadosEnlace()
+      ativarCamada('enlace')
+      atualizarProgresso(100, 'Quadro de enlace finalizado')
+      await delay(350)
+
+      const srcIP = estado.rede.rede.srcIP
+      const dstIP = estado.rede.rede.dstIP
+      document.dispatchEvent(new CustomEvent('rota-calculada', {
+        detail: { srcIP, dstIP }
+      }))
+    } catch (err) {
+      console.error('Erro ao encapsular camadas:', err)
+      atualizarProgresso(0, 'Erro no fluxo')
+    }
+  }
+
   function renderTodasCamadas() {
     renderDadosAplicacao()
     renderDadosApresentacao()
@@ -153,25 +233,8 @@ export function iniciarCamadaAplicacao() {
     renderDadosEnlace()
   }
 
-  function encapsularCamadas() {
-    try {
-      if (!estado.apresentacao) return
-      const sessaoObj = iniciarSessao(estado.apresentacao)
-      const segmento = camadaTransporte(sessaoObj, estado.protocolo)
-      const pacote = camadaRede(segmento, estado.dadosAplicacao)
-      const quadro = camadaEnlace(pacote)
-      estado.sessao = sessaoObj
-      estado.transporte = segmento
-      estado.rede = pacote
-      estado.enlace = quadro
-      estado.encapsulamento = quadro
-    } catch (err) {
-      console.error('Erro ao encapsular camadas:', err)
-    }
-  }
-
   if (botaoRequisicao) {
-    botaoRequisicao.addEventListener('click', event => {
+    botaoRequisicao.addEventListener('click', async event => {
       event.preventDefault()
       const texto = textoRequisicaoEl?.value.trim() || ''
       if (!texto) {
@@ -195,17 +258,13 @@ export function iniciarCamadaAplicacao() {
           ocultarFormulario()
         }
 
-        // Se for HTTP/HTTPS, gerar JWT simples
         if (protocolo === 'HTTP/HTTPS') {
           const hostname = texto.replace(/https?:\/\//i, '').split('/')[0]
-          
           const payload = {
             sessionId: crypto.randomUUID(),
             message: { dados: 'dados da camada de aplicacao', origem: hostname },
             timestamp: new Date().toISOString()
           }
-          
-          // JWT simples (header.payload sem assinatura criptográfica)
           const header = { alg: 'none', typ: 'JWT' }
           const token = btoa(JSON.stringify(header)) + '.' + btoa(JSON.stringify(payload))
 
@@ -213,26 +272,22 @@ export function iniciarCamadaAplicacao() {
           estado.apresentacao = { jwt: token, payload }
         }
 
-        // Se for DNS, simular resolução
         if (protocolo === 'DNS') {
           const dominio = texto.replace(/(dns|lookup|resolver|^\s*\/?\s*)/gi, '').trim()
-          
-          // Simular IP para domínios conhecidos
           const ips = {
             'google.com': '142.250.76.46',
             'github.com': '140.82.113.4',
             'ifpe.edu.br': '187.45.192.56'
           }
           const ip = ips[dominio] || '192.168.1.1'
-          
           estado.dadosAplicacao = Object.assign({}, estado.dadosAplicacao, { dominio, ip })
           estado.apresentacao = { dns: { domain: dominio, ip } }
         }
 
         renderDadosAplicacao()
-        encapsularCamadas()
         renderTodasCamadas()
         if (textoRequisicaoEl) textoRequisicaoEl.value = ''
+        await executarFluxoAutomatico()
       } catch (err) {
         console.error('Erro ao processar requisição:', err)
         alert(`Erro: ${err.message}`)
@@ -244,7 +299,7 @@ export function iniciarCamadaAplicacao() {
   }
 
   if (botaoEnviarSmtp) {
-    botaoEnviarSmtp.addEventListener('click', () => {
+    botaoEnviarSmtp.addEventListener('click', async () => {
       const destinatario = emailSmtpEl?.value.trim() || ''
       const assunto = assuntoSmtpEl?.value.trim() || ''
       const mensagem = mensagemSmtpEl?.value.trim() || ''
@@ -253,7 +308,6 @@ export function iniciarCamadaAplicacao() {
         alert('Preencha todos os campos do formulário SMTP/POP.')
         return
       }
-
       if (!destinatario.includes('@')) {
         alert('Digite um destinatário válido com @.')
         return
@@ -273,9 +327,9 @@ export function iniciarCamadaAplicacao() {
       }
 
       renderDadosAplicacao()
-      encapsularCamadas()
       renderTodasCamadas()
       ocultarFormulario()
+      await executarFluxoAutomatico()
 
       if (emailSmtpEl) emailSmtpEl.value = ''
       if (assuntoSmtpEl) assuntoSmtpEl.value = ''
