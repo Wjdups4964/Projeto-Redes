@@ -3,8 +3,9 @@ import { iniciarSessao } from './sessao.js'
 import { camadaTransporte } from './transporte.js'
 import { camadaRede } from './rede.js'
 import { camadaEnlace } from './enlace-dados.js'
+import { camadaFisica } from './fisica.js'
 
-const CAMADAS_ORDEM = ['aplicacao', 'apresentacao', 'sessao', 'transporte', 'rede', 'enlace']
+const CAMADAS_ORDEM = ['aplicacao', 'apresentacao', 'sessao', 'transporte', 'rede', 'enlace', 'fisica']
 
 export function iniciarCamadaAplicacao() {
   const estado = {
@@ -17,6 +18,7 @@ export function iniciarCamadaAplicacao() {
     transporte: null,
     rede: null,
     enlace: null,
+    fisica: null,
     encapsulamento: null
   }
 
@@ -37,6 +39,11 @@ export function iniciarCamadaAplicacao() {
   const dadosTransporteEl = document.querySelector('#dados-transporte')
   const dadosRedeEl = document.querySelector('#dados-rede')
   const dadosEnlaceEl = document.querySelector('#dados-enlace')
+  const dadosFisicaVerificacaoEl = document.querySelector('#dados-fisica-verificacao')
+  const dadosFisicaObjetoEl = document.querySelector('#dados-fisica-objeto')
+  const dadosFisicaBinarioEl = document.querySelector('#dados-fisica-binario')
+  const dadosFisicaInfoEl = document.querySelector('#dados-fisica-info')
+  const fisicaStatusFinalEl = document.querySelector('#fisica-status-final')
   const progressoFillEl = document.querySelector('#fluxo-progresso-fill')
   const progressoTextoEl = document.querySelector('#fluxo-status-text')
 
@@ -145,6 +152,62 @@ export function iniciarCamadaAplicacao() {
     dadosEnlaceEl.textContent = estado.enlace ? JSON.stringify(estado.enlace, null, 2) : 'Aguardando quadro de enlace...'
   }
 
+  function renderDadosFisica() {
+    if (!estado.fisica) {
+      if (dadosFisicaVerificacaoEl) dadosFisicaVerificacaoEl.textContent = 'Aguardando verificação de integridade...'
+      if (dadosFisicaObjetoEl) dadosFisicaObjetoEl.textContent = 'Aguardando dados da camada de enlace...'
+      if (dadosFisicaBinarioEl) dadosFisicaBinarioEl.textContent = 'Aguardando conversão para binário...'
+      return
+    }
+
+    // Exibir verificação de integridade
+    if (dadosFisicaVerificacaoEl) {
+      const v = estado.fisica.verificacaoIntegridade
+      const linhas = [
+        `CRC Original (recebido):    ${v.crcOriginal}`,
+        `CRC Recalculado (local):    ${v.crcRecalculado}`,
+        ``,
+        `Resultado: ${v.status}`
+      ]
+      dadosFisicaVerificacaoEl.textContent = linhas.join('\n')
+    }
+
+    // Exibir objeto recebido da camada de enlace
+    if (dadosFisicaObjetoEl) {
+      dadosFisicaObjetoEl.textContent = JSON.stringify(estado.fisica.quadroRecebido, null, 2)
+    }
+
+    // Exibir informações de transmissão
+    if (dadosFisicaInfoEl) {
+      const t = estado.fisica.transmissao
+      dadosFisicaInfoEl.innerHTML = `
+        <span class="info-badge">📡 Meio: ${t.meio}</span>
+        <span class="info-badge">⚡ Sinalização: ${t.sinalizacao}</span>
+        <span class="info-badge">📊 Total: ${t.totalBits} bits (${t.totalBytes} bytes)</span>
+        <span class="info-badge status-badge">${t.status}</span>
+      `
+    }
+
+    // Exibir representação binária
+    if (dadosFisicaBinarioEl) {
+      dadosFisicaBinarioEl.textContent = estado.fisica.representacaoBinaria
+    }
+
+    // Status final de transmissão
+    if (fisicaStatusFinalEl) {
+      fisicaStatusFinalEl.innerHTML = `
+        <div class="transmissao-concluida">
+          <span class="transmissao-icone">📡</span>
+          <div class="transmissao-texto">
+            <strong>Transmissão Concluída!</strong>
+            <p>Os dados foram convertidos em sinais binários e estão sendo enviados pelo meio físico (${estado.fisica.transmissao.meio}).</p>
+            <p>Total transmitido: <strong>${estado.fisica.transmissao.totalBits} bits</strong></p>
+          </div>
+        </div>
+      `
+    }
+  }
+
   function atualizarProgresso(percentual, texto) {
     if (progressoFillEl) progressoFillEl.style.width = `${percentual}%`
     if (progressoTextoEl) progressoTextoEl.textContent = texto
@@ -238,7 +301,14 @@ export function iniciarCamadaAplicacao() {
       estado.encapsulamento = estado.enlace
       renderDadosEnlace()
       ativarCamada('enlace')
-      atualizarProgresso(100, 'Quadro de enlace finalizado ✓')
+      atualizarProgresso(85, 'Quadro de enlace montado — aguardando usuário')
+      await aguardarProsseguir('enlace')
+
+      // — Camada Física —
+      estado.fisica = camadaFisica(estado.enlace)
+      renderDadosFisica()
+      ativarCamada('fisica')
+      atualizarProgresso(100, 'Transmissão física concluída ✓')
 
       const srcIP = estado.rede.rede.srcIP
       const dstIP = estado.rede.rede.dstIP
@@ -258,6 +328,7 @@ export function iniciarCamadaAplicacao() {
     renderDadosTransporte()
     renderDadosRede()
     renderDadosEnlace()
+    renderDadosFisica()
   }
 
   if (botaoRequisicao) {
@@ -356,7 +427,7 @@ export function iniciarCamadaAplicacao() {
       renderDadosAplicacao()
       renderTodasCamadas()
       ocultarFormulario()
-      await executarFluxoAutomatico()
+      await executarFluxoControlado()
 
       if (emailSmtpEl) emailSmtpEl.value = ''
       if (assuntoSmtpEl) assuntoSmtpEl.value = ''

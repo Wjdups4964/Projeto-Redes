@@ -31,4 +31,8 @@ camadas.enlace = {
   descricao: 'Forma quadros (frames) com endereçamento físico (MAC) e controle de acesso.'
 }
 
+camadas.fisica = {
+  titulo: 'Camada Física',
+  descricao: 'Converte os quadros em sinais binários para transmissão pelo meio físico, verificando a integridade dos dados via CRC.'
+}
 

@@ -167,6 +167,30 @@
             <p>Quadros com endereçamento físico (MAC) e encapsulamento final.</p>
             <pre id="dados-enlace">Aguardando quadro de enlace...</pre>
           </section>
+
+          <section id="camada-fisica" class="camada">
+            <h3>Camada Física</h3>
+            <p>Recepção dos dados do enlace, verificação de integridade (CRC) e conversão para sinais binários.</p>
+            
+            <div class="fisica-verificacao">
+              <h4>🔍 Verificação de Integridade (CRC)</h4>
+              <pre id="dados-fisica-verificacao">Aguardando verificação de integridade...</pre>
+            </div>
+
+            <div class="fisica-objeto">
+              <h4>📦 Objeto Recebido da Camada de Enlace</h4>
+              <pre id="dados-fisica-objeto">Aguardando dados da camada de enlace...</pre>
+            </div>
+
+            <div class="fisica-binario">
+              <h4>💡 Representação Binária (Transmissão pelo Meio Físico)</h4>
+              <div class="fisica-transmissao-info" id="dados-fisica-info"></div>
+              <pre id="dados-fisica-binario" class="binario-output">Aguardando conversão para binário...</pre>
+            </div>
+
+            <div class="fisica-status-final" id="fisica-status-final">
+            </div>
+          </section>
         </div>
       </div>
     </section>

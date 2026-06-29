@@ -306,3 +306,157 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ═══ Camada Física ═══ */
+
+.fisica-verificacao,
+.fisica-objeto,
+.fisica-binario {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+}
+
+.fisica-verificacao h4,
+.fisica-objeto h4,
+.fisica-binario h4 {
+  margin: 0 0 1rem;
+  color: var(--accent-soft);
+  font-size: 1.15rem;
+}
+
+.fisica-verificacao pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.fisica-objeto pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Representação binária */
+.binario-output {
+  font-family: 'Courier New', 'Consolas', monospace !important;
+  font-size: 0.82rem !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.06em;
+  color: #00e5ff !important;
+  background: rgba(0, 229, 255, 0.04) !important;
+  border: 1px solid rgba(0, 229, 255, 0.15) !important;
+  border-radius: 1rem;
+  padding: 1.25rem !important;
+  max-height: 20rem;
+  overflow-y: auto;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+/* Scrollbar estilizada para o binário */
+.binario-output::-webkit-scrollbar {
+  width: 6px;
+}
+
+.binario-output::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.binario-output::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Badges de informação de transmissão */
+.fisica-transmissao-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.status-badge {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.3);
+  color: #00e5ff;
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Status final de transmissão */
+.fisica-status-final {
+  margin-top: 1.5rem;
+}
+
+.transmissao-concluida {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(7, 158, 166, 0.12));
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  animation: concluida-entrada 0.5s ease-out both;
+}
+
+.transmissao-icone {
+  font-size: 2.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  animation: transmitir-onda 1.5s ease-in-out infinite;
+}
+
+@keyframes transmitir-onda {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.transmissao-texto strong {
+  display: block;
+  font-size: 1.15rem;
+  color: #00e5ff;
+  margin-bottom: 0.4rem;
+}
+
+.transmissao-texto p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@keyframes concluida-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
